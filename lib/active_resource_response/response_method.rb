@@ -41,7 +41,11 @@ module ActiveResourceResponse
           alias :find_without_http_response :find
 
           def find(*arguments)
-            result = find_without_http_response(*arguments)
+            begin
+              result = find_without_http_response(*arguments)
+            rescue
+              raise ActiveResource::ResourceNotFound.new(nil)
+            end
             self.merge_response_to_result(result)
           end
         end unless methods.map(&:to_sym).include?(:find_without_http_response)
